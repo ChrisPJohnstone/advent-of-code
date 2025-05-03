@@ -8,7 +8,7 @@ def read_input(filepath: str) -> tuple[list[int]]:
     with open(filepath, "r") as file:
         for line in file:
             left.append(int(line[: line.find(" ")]))
-            right.append(int(line[- line[::-1].find(" "): -1]))
+            right.append(int(line[-line[::-1].find(" ") : -1]))
     left.sort()
     right.sort()
     return left, right
@@ -20,7 +20,6 @@ def main(input_path: str) -> int:
     for n in range(len(left)):
         distance += abs(left[n] - right[n])
     return distance
-
 
 
 if __name__ == "__main__":

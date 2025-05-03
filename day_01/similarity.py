@@ -8,7 +8,7 @@ def read_input(filepath: str) -> tuple[list[int]]:
     with open(filepath, "r") as file:
         for line in file:
             left.append(int(line[: line.find(" ")]))
-            right.append(int(line[- line[::-1].find(" "): -1]))
+            right.append(int(line[-line[::-1].find(" ") : -1]))
     return left, right
 
 
@@ -18,7 +18,6 @@ def main(input_path: str) -> int:
     for location in left:
         similarity += location * right.count(location)
     return similarity
-
 
 
 if __name__ == "__main__":
