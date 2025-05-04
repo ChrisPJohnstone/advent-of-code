@@ -5,7 +5,7 @@ from collections.abc import Callable
 WORD: str = "MAS"
 
 
-def read_input(filepath: str) -> str:
+def read_input(filepath: str) -> list[list[str]]:
     with open(filepath, "r") as file:
         return [list(line[:-1]) for line in file.readlines()]
 
