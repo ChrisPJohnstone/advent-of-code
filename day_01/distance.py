@@ -7,8 +7,9 @@ def read_input(filepath: str) -> tuple[list[int]]:
     right: list[int] = []
     with open(filepath, "r") as file:
         for line in file:
-            left.append(int(line[: line.find(" ")]))
-            right.append(int(line[-line[::-1].find(" ") : -1]))
+            nums: list[str] = line.split(" ")
+            left.append(int(nums[0]))
+            right.append(int(nums[-1][:-1]))
     left.sort()
     right.sort()
     return left, right
