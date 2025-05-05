@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser, Namespace
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 import logging
 
 
-def read_input(filepath: str) -> list[int]:
+def read_input(filepath: str) -> Iterator[list[int]]:
     logging.debug(f"Reading {filepath}")
     with open(filepath, "r") as file:
         lines: list[str] = file.read().splitlines()

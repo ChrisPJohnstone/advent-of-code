@@ -20,7 +20,7 @@ def read_input(filepath: str) -> list[list[str]]:
         return [list(line[:-1]) for line in file.readlines()]
 
 
-def is_match(grid: list[str], direction: str, x: int, y: int) -> bool:
+def is_match(grid: list[list[str]], direction: str, x: int, y: int) -> bool:
     for n in range(1, len(WORD)):
         next_x, next_y = DIRECTIONS[direction](x, y, n)
         if 0 > next_x or next_x >= len(grid[0]):
@@ -33,7 +33,7 @@ def is_match(grid: list[str], direction: str, x: int, y: int) -> bool:
     return True
 
 
-def count_matches(grid: list[str], x: int, y: int) -> int:
+def count_matches(grid: list[list[str]], x: int, y: int) -> int:
     directions: dict[str, int] = {
         direction: is_match(grid, direction, x, y)
         for direction in DIRECTIONS.keys()
@@ -43,7 +43,7 @@ def count_matches(grid: list[str], x: int, y: int) -> int:
 
 def main(input_path: str) -> int:
     counter: int = 0
-    grid: list[str] = read_input(input_path)
+    grid: list[list[str]] = read_input(input_path)
     for y, line in enumerate(grid):
         for x, char in enumerate(line):
             if char != "X":

@@ -56,7 +56,7 @@ class Patrol:
 def read_input(filepath: str) -> Patrol:
     with open(filepath, "r") as file:
         lines: list[str] = file.readlines()
-    start_position: tuple[int, int] = ()
+    start_position: tuple[int, int] = (0, 0)
     obstacles: set[tuple[int, int]] = set()
     for y, line in enumerate(lines):
         for x, char in enumerate(line[:-1]):
@@ -69,7 +69,7 @@ def read_input(filepath: str) -> Patrol:
                 obstacles.add((x, y))
                 continue
             raise ValueError(f"Unknown char {char} at ({x}, {y})")
-    if not start_position:
+    if start_position == (0, 0):
         raise ValueError("Start position not found")
     return Patrol(
         start_x=start_position[0],

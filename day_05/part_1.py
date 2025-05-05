@@ -5,8 +5,8 @@ from argparse import ArgumentParser, Namespace
 def read_input(filepath: str) -> tuple[dict[int, set[int]], list[list[int]]]:
     with open(filepath, "r") as file:
         lines: list[str] = file.readlines()
-    rules: dict[int, list[int]] = {}
-    updates: list[set[int]] = []
+    rules: dict[int, set[int]] = {}
+    updates: list[list[int]] = []
     for line in lines:
         if "|" in line:
             pages: list[str] = line[:-1].split("|")

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser, Namespace
-from collections.abc import Callable
-from re import finditer, Match, search
+from re import Match, search
 
 DO_PATTERN: str = r"do\(\)"
 DONT_PATTERN: str = r"don't\(\)"
@@ -22,7 +21,6 @@ def read_instructions(
         next_do: Match | None = search(DO_PATTERN, instructions)
         if next_do is None:
             return total
-        position: int = next_do.start()
         return read_instructions(instructions[next_do.end() :], total=total)
     next_mul: Match | None = search(MUL_PATTERN, instructions)
     if next_mul is None:
@@ -39,8 +37,6 @@ def read_instructions(
 
 
 def main(input_path: str) -> int:
-    total: int = 0
-    enabled: bool = True
     instructions: str = read_data(input_path)[:-1]
     return read_instructions(instructions)
 
