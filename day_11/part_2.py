@@ -25,7 +25,6 @@ def blink(stone: int, n: int) -> int:
     return recurse(stone * 2024)
 
 
-
 def main(input_path: str, blinks: int) -> int:
     stones: list[int] = read_input(input_path)
     output: int = 0

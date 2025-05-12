@@ -8,24 +8,24 @@ type PlotMap = dict[Plot, str]
 type Region = set[Plot]
 
 DIRECTIONS: list[Callable] = [
-    lambda x, y: (x, y - 1),        # N
-    lambda x, y: (x + 1, y - 1),    # NE
-    lambda x, y: (x + 1, y),        # E
-    lambda x, y: (x + 1, y + 1),    # SE
-    lambda x, y: (x, y + 1),        # S
-    lambda x, y: (x - 1, y + 1),    # SW
-    lambda x, y: (x - 1, y),        # W
-    lambda x, y: (x - 1, y - 1),    # NW
+    lambda x, y: (x, y - 1),  # N
+    lambda x, y: (x + 1, y - 1),  # NE
+    lambda x, y: (x + 1, y),  # E
+    lambda x, y: (x + 1, y + 1),  # SE
+    lambda x, y: (x, y + 1),  # S
+    lambda x, y: (x - 1, y + 1),  # SW
+    lambda x, y: (x - 1, y),  # W
+    lambda x, y: (x - 1, y - 1),  # NW
 ]
 CORNERS: list[Callable] = [
-    lambda dirs: not any([dirs[0], dirs[2]]),               # NE Outer
-    lambda dirs: not any([dirs[2], dirs[4]]),               # SE Outer
-    lambda dirs: not any([dirs[4], dirs[6]]),               # SW Outer
-    lambda dirs: not any([dirs[6], dirs[0]]),               # NW Outer
-    lambda dirs: all([dirs[0], dirs[2]]) and not dirs[1],   # NE Inner
-    lambda dirs: all([dirs[2], dirs[4]]) and not dirs[3],   # SE Inner
-    lambda dirs: all([dirs[4], dirs[6]]) and not dirs[5],   # SW Inner
-    lambda dirs: all([dirs[6], dirs[0]]) and not dirs[7],   # NW Inner
+    lambda dirs: not any([dirs[0], dirs[2]]),  # NE Outer
+    lambda dirs: not any([dirs[2], dirs[4]]),  # SE Outer
+    lambda dirs: not any([dirs[4], dirs[6]]),  # SW Outer
+    lambda dirs: not any([dirs[6], dirs[0]]),  # NW Outer
+    lambda dirs: all([dirs[0], dirs[2]]) and not dirs[1],  # NE Inner
+    lambda dirs: all([dirs[2], dirs[4]]) and not dirs[3],  # SE Inner
+    lambda dirs: all([dirs[4], dirs[6]]) and not dirs[5],  # SW Inner
+    lambda dirs: all([dirs[6], dirs[0]]) and not dirs[7],  # NW Inner
 ]
 
 
