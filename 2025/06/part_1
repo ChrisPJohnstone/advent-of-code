@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from math import prod
+from typing import Callable
+from pathlib import Path
+
+type Operation = Callable[[list[int]], int]
+
+OPERATIONS: dict[str, Operation] = {
+    "+": sum,
+    "*": prod,
+}
+
+def main(input_path: Path) -> int:
+    output: int = 0
+    input: str = input_path.read_text()
+    lines: list[list[str]] = [line.split() for line in input.splitlines()]
+    last_line: list[str] = lines.pop(-1)
+    for index, char in enumerate(last_line):
+        values: list[int] = [int(line[index]) for line in lines]
+        output += OPERATIONS[char](values)
+    return output
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
