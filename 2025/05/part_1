@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+
+type Range = tuple[int, int]
+
+
+def _fresh_ranges(ingredient_ranges: str) -> set[Range]:
+    output: set[Range] = set()
+    for ingredient_range in ingredient_ranges.splitlines():
+        limits: list[str] = ingredient_range.split("-")
+        start: int = int(limits[0])
+        end: int = int(limits[1])
+        output.add((start, end))
+    return output
+
+
+def is_fresh(fresh_ranges: set[Range], ingredient: int) -> bool:
+    for fresh_range in fresh_ranges:
+        if fresh_range[0] <= ingredient <= fresh_range[1]:
+            return True
+    return False
+
+
+def main(input_path: Path) -> int:
+    output: int = 0
+    input: str = input_path.read_text()
+    parts: list[str] = input.split("\n\n")
+    fresh_ranges: set[Range] = _fresh_ranges(parts[0])
+    for ingredient_str in parts[1].splitlines():
+        ingredient: int = int(ingredient_str)
+        if is_fresh(fresh_ranges, ingredient):
+            output += 1
+            continue
+    return output
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
