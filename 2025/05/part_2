@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+
+type Range = tuple[int, int]
+
+
+class RangeSet:
+    def __init__(self) -> None:
+        self.ranges: list[Range] = []
+
+    @staticmethod
+    def ranges_intersect(a: Range, b: Range) -> bool:
+        min_a: int = a[0]
+        min_b: int = b[0]
+        max_a: int = a[1]
+        max_b: int = b[1]
+        if min_b <= min_a <= max_b:
+            return True
+        if max_b <= max_a <= min_b:
+            return True
+        if min_a <= min_b <= max_a:
+            return True
+        if max_a <= max_b <= min_a:
+            return True
+        return False
+
+    @staticmethod
+    def merge_ranges(a: Range, b: Range) -> Range:
+        return min(a[0], b[0]), max(a[1], b[1])
+
+    def add_range(self, new_range: Range) -> None:
+        for existing_range in self.ranges:
+            if not self.ranges_intersect(new_range, existing_range):
+                continue
+            self.ranges.remove(existing_range)
+            merged_range: Range = self.merge_ranges(new_range, existing_range)
+            self.add_range(merged_range)
+            return
+        self.ranges.append(new_range)
+
+    @property
+    def fresh_ingredients(self) -> int:
+        total: int = 0
+        for r in self.ranges:
+            total += r[1] - r[0] + 1
+        return total
+
+
+def main(input_path: Path) -> int:
+    range_set: RangeSet = RangeSet()
+    input: str = input_path.read_text()
+    parts: list[str] = input.split("\n\n")
+    for ingredient_range_str in parts[0].splitlines():
+        limits: list[str] = ingredient_range_str.split("-")
+        ingredient_range: Range = int(limits[0]),  int(limits[1])
+        range_set.add_range(ingredient_range)
+    return range_set.fresh_ingredients
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
