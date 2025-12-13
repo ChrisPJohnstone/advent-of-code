@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+
+type Coordinate = tuple[int, int]
+
+CHAR_START: str = "S"
+CHAR_SPLITTER: str = "^"
+
+
+class Navigator:
+    def __init__(self, lines: list[str]) -> None:
+        self.current_line = 0
+        self.lines = lines
+        first_line: str = self.lines[self.current_line]
+        self.beam_columns = {first_line.find(CHAR_START)}
+        self.times_split = 0
+
+    @property
+    def max_line(self) -> int:
+        return len(self.lines) - 1
+
+    @property
+    def max_column(self) -> int:
+        return len(self.lines[0]) - 1
+
+    def split_beam(self, column: int) -> None:
+        self.times_split += 1
+        self.beam_columns.remove(column)
+        l_column: int = column - 1
+        if l_column >= 0:
+            self.beam_columns.add(l_column)
+        r_column: int = column + 1
+        if l_column <= self.max_column:
+            self.beam_columns.add(r_column)
+
+    def move_down(self) -> None:
+        beam_columns: set[int] = self.beam_columns.copy()
+        self.current_line += 1
+        line: str = self.lines[self.current_line]
+        for column in beam_columns:
+            if line[column] != CHAR_SPLITTER:
+                continue
+            self.split_beam(column)
+
+    def move_to_bottom(self) -> None:
+        while self.current_line < self.max_line:
+            self.move_down()
+
+
+def main(input_path: Path) -> int:
+    input: str = input_path.read_text()
+    navigator: Navigator = Navigator(input.splitlines())
+    navigator.move_to_bottom()
+    return navigator.times_split
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
