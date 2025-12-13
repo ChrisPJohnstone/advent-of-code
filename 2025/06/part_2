@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from collections.abc import Callable, Iterator
+from math import prod
+from pathlib import Path
+
+type Range = tuple[int, int]
+type Operation = Callable[[Iterator[int]], int]
+
+OPERATIONS: dict[str, Operation] = {
+    "+": sum,
+    "*": prod,
+}
+
+
+def column_ranges(symbol_line: str) -> Iterator[Range]:
+    column_start: int = 0
+    while True:
+        len_line_old: int = len(symbol_line)
+        symbol_line = symbol_line[1:].lstrip()
+        len_line_new: int = len(symbol_line)
+        len_diff: int = len_line_old - len_line_new
+        if len_line_new == 0:
+            yield column_start, column_start + len_diff
+            break
+        yield column_start, column_start + len_diff - 1
+        column_start += len_diff
+
+
+def human_to_cephalopod(human_values: list[str]) -> Iterator[int]:
+    for index in range(len(human_values[0])):
+        number: list[str] = [value[index] for value in human_values]
+        yield int("".join(number))
+
+
+def main(input_path: Path) -> int:
+    output: int = 0
+    input: str = input_path.read_text()
+    lines: list[str] = input.splitlines()
+    symbol_line: str = lines.pop(-1)
+    for column_range in column_ranges(symbol_line):
+        start: int = column_range[0]
+        stop: int = column_range[1]
+        symbol: str = symbol_line[start]
+        human_values: list[str] = [line[start:stop][::-1] for line in lines]
+        output += OPERATIONS[symbol](human_to_cephalopod(human_values))
+    return output
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
