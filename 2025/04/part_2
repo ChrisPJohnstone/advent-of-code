@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from collections.abc import Callable
+from pathlib import Path
+
+type Coordinate = tuple[int, int]
+type Direction = Callable[[Coordinate], Coordinate]
+
+ITEM_CHAR: str = "@"
+MAX_ROLLS_IN_PROXIMITY: int = 4
+DIRECTIONS: set[Direction] = {
+    lambda coordinate: (coordinate[0] + 1, coordinate[1]),     # Right
+    lambda coordinate: (coordinate[0] - 1, coordinate[1]),     # Left
+    lambda coordinate: (coordinate[0], coordinate[1] + 1),     # Down
+    lambda coordinate: (coordinate[0], coordinate[1] - 1),     # Up
+    lambda coordinate: (coordinate[0] + 1, coordinate[1] + 1), # Down-Right
+    lambda coordinate: (coordinate[0] - 1, coordinate[1] + 1), # Down-Left
+    lambda coordinate: (coordinate[0] + 1, coordinate[1] - 1), # Up-Right
+    lambda coordinate: (coordinate[0] - 1, coordinate[1] - 1), # Up-Left
+}
+
+
+def parse_rolls(map_string: str) -> list[Coordinate]:
+    rows: list[str] = map_string.splitlines()
+    map: list[Coordinate] = []
+    for y, row in enumerate(rows):
+        for x, char in enumerate(row):
+            if char != ITEM_CHAR:
+                continue
+            map.append((x, y))
+    return map
+
+
+def can_roll_be_removed(roll: Coordinate, rolls: list[Coordinate]) -> bool:
+    rolls_in_proximity: int = 0
+    for direction in DIRECTIONS:
+        new_coordinate: Coordinate = direction(roll)
+        if new_coordinate in rolls:
+            rolls_in_proximity += 1
+        if rolls_in_proximity >= MAX_ROLLS_IN_PROXIMITY:
+            return False
+    return True
+
+
+def main(input_path: Path) -> int:
+    input: str = input_path.read_text()
+    output: int = 0
+    rolls: list[Coordinate] = parse_rolls(input)
+    while True:
+        finished: bool = True
+        for roll in rolls:
+            if not can_roll_be_removed(roll, rolls):
+                continue
+            output += 1
+            rolls.remove(roll)
+            finished = False
+        if finished:
+            break
+    return output
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
