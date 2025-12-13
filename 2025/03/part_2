@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+
+N_BATTERIES: int = 12
+
+
+def max_joltage(bank: str) -> int:
+    batteries: list[str] = []
+    remaining: list[str] = list(bank)
+    for _ in range(len(remaining)):
+        while len(batteries) < N_BATTERIES:
+            batteries.append("0")
+        curr: int = int(remaining.pop(0))
+        check_from: int = max(0, N_BATTERIES - len(remaining) - 1)
+        for index, battery_str in enumerate(batteries[check_from:]):
+            position: int = check_from + index
+            battery: int = int(battery_str)
+            if curr <= battery:
+                continue
+            del batteries[position:]
+            batteries.append(str(curr))
+            break
+    return int("".join(batteries))
+
+
+def main(input_path: Path) -> int:
+    input: str = input_path.read_text()
+    output: int = 0
+    for bank in input.splitlines():
+        output += max_joltage(bank)
+    return output
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
