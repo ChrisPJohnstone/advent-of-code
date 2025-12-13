@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from functools import cache
+from pathlib import Path
+
+type Coordinate = tuple[int, int]
+
+CHAR_START: str = "S"
+CHAR_SPLITTER: str = "^"
+
+
+class Navigator:
+    def __init__(self, lines: list[str]) -> None:
+        self.lines = lines
+        first_line: str = self.lines[0]
+        self.start_column = first_line.find(CHAR_START)
+
+    @property
+    def max_line(self) -> int:
+        return len(self.lines) - 1
+
+    @cache
+    def paths(self, line_n: int, column: int) -> int:
+        if line_n > self.max_line:
+            return 1
+        if self.lines[line_n][column] != CHAR_SPLITTER:
+            return self.paths(line_n + 1, column)
+        l: int = self.paths(line_n + 1, column - 1)
+        r: int = self.paths(line_n + 1, column + 1)
+        return l + r
+
+
+def main(input_path: Path) -> int:
+    input: str = input_path.read_text()
+    navigator: Navigator = Navigator(input.splitlines())
+    return navigator.paths(1, navigator.start_column)
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
