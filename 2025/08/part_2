@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from collections.abc import Iterator
+from itertools import combinations
+from math import prod, sqrt
+from pathlib import Path
+
+type Position = tuple[int, int, int]
+type Connection = tuple[Position, Position]
+type Circuit = set[Position]
+type Circuits = list[Circuit]
+
+
+
+def positions(boxes: list[str]) -> Iterator[Position]:
+    for box in boxes:
+        x, y, z = map(int, box.split(","))
+        yield x, y, z
+
+
+def distance(p: Position, q: Position) -> float:
+    """https://en.wikipedia.org/wiki/Euclidean_distance"""
+    x: int = (p[0] - q[0]) ** 2
+    y: int = (p[1] - q[1]) ** 2
+    z: int = (p[2] - q[2]) ** 2
+    return sqrt(x + y + z)
+
+
+def merge_connection(circuits: Circuits, connection: Connection) -> None:
+    box_one: Position = connection[0]
+    box_two: Position = connection[1]
+    box_one_circuit: set[Position] = set()
+    box_two_circuit: set[Position] = set()
+    for circuit in circuits:
+        if box_one in circuit:
+            box_one_circuit = circuit
+        if box_two in circuit:
+            box_two_circuit = circuit
+    if box_one_circuit and box_two_circuit:
+        if box_one_circuit == box_two_circuit:
+            return
+        box_one_circuit.update(box_two_circuit)
+        circuits.remove(box_two_circuit)
+        return
+    if box_one_circuit:
+        box_one_circuit.add(box_two)
+        return
+    if box_two_circuit:
+        box_two_circuit.add(box_one)
+        return
+    circuits.append({box_one, box_two})
+
+
+def main(input_path: Path) -> int:
+    input: str = input_path.read_text()
+    all_positions: list[Position] = list(positions(input.splitlines()))
+    n_positions: int = len(all_positions)
+    connections: dict[float, Connection] = {
+        distance(*combination): combination
+        for combination in combinations(all_positions, 2)
+    }
+    distances_sorted: list[float] = sorted(connections.keys())
+    connections_sorted: dict[float, Connection] = dict(
+        sorted(connections.items(), key=lambda item: item[0])
+    )
+    index: int = 0
+    circuits: Circuits = [{*connections[distances_sorted[index]]}]
+    while len(circuits[0]) < n_positions:
+        index += 1
+        connection: Connection = connections[distances_sorted[index]]
+        merge_connection(circuits, connection)
+    return connection[0][0] * connection[1][0]
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
