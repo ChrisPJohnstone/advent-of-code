@@ -1,7 +1,9 @@
-# Overview
+# Advent Of Code Solutions
 
-My solutions for advent of code 2024
+## Overview
 
-# Links
+Solutions for advent of code using only Python standard libary.
 
-- [Advent of Code 2024](https://adventofcode.com/2024)
+## Links
+
+- [Advent of Code](https://adventofcode.com/)
