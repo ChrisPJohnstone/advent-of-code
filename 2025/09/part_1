@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+from argparse import ArgumentParser, Namespace
+from collections.abc import Iterator
+from itertools import combinations
+from pathlib import Path
+
+type Position = tuple[int, int]
+
+
+class Rectangle:
+    def __init__(self, corner_one: Position, corner_two: Position) -> None:
+        self.corner_one = corner_one
+        self.corner_two = corner_two
+
+    @property
+    def length(self) -> int:
+        return abs(self.corner_one[0] - self.corner_two[0]) + 1
+
+    @property
+    def width(self) -> int:
+        return abs(self.corner_one[1] - self.corner_two[1]) + 1
+
+    @property
+    def area(self) -> int:
+        return self.width * self.length
+
+
+def tiles(positions: list[str]) -> Iterator[Position]:
+    for position in positions:
+        x, y = map(int, position.split(","))
+        yield x, y
+
+
+def main(input_path: Path) -> int:
+    input: str = input_path.read_text()
+    rectangles: list[Rectangle] = [
+        Rectangle(*combination)
+        for combination in combinations(tiles(input.splitlines()), 2)
+    ]
+    rectangles_sorted: list[Rectangle] = sorted(
+        rectangles,
+        key=lambda rectangle: rectangle.area,
+        reverse=True,
+    )
+    return rectangles_sorted[0].area
+
+
+if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("path", type=Path, nargs=1)
+    args: Namespace = parser.parse_args()
+    outcome: int = main(args.path[0])
+    print(f"Outcome: {outcome}")
